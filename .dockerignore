@@ -1,15 +1,19 @@
 .git
 .gitignore
 .github
-node_modules
-npm-debug.log*
+*.md
+!README.md
 .env
-.env.local
-.env.*.local
+.env.*
 .vscode
 .idea
 *.swp
 .DS_Store
-README.md
+# Meteor local build artifacts — never include in Docker context
+.meteor/local
+# npm artifacts
+node_modules
+npm-debug.log*
+# Docker files themselves
 Dockerfile*
 docker-compose*

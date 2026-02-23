@@ -3,11 +3,18 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js"
+    "start": "meteor run",
+    "build": "meteor build --directory /tmp/meteor-bundle --server-only",
+    "lint": "echo \"No linter configured\""
+  },
+  "meteor": {
+    "mainModule": {
+      "client": "client/main.js",
+      "server": "server/main.ts"
+    }
   },
   "dependencies": {
-    "dotenv": "^16.4.0",
-    "express": "^4.21.0"
+    "@types/node": "^22.0.0",
+    "meteor-node-stubs": "^1.2.9"
   }
 }

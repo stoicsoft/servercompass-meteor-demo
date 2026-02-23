@@ -1,20 +1,38 @@
-'use strict';
+import { WebApp } from 'meteor/webapp';
+import { IncomingMessage, ServerResponse } from 'http';
 
-require('dotenv').config();
+// Public environment variable keys exposed to the dashboard and /api/env
+const PUBLIC_KEYS = ['APP_NAME', 'API_URL', 'ENVIRONMENT', 'VERSION'] as const;
 
-const express = require('express');
-
-const app = express();
-
-const PUBLIC_KEYS = ['APP_NAME', 'API_URL', 'ENVIRONMENT', 'VERSION'];
-
-function envValue(key) {
-  const val = (process.env[key] || '').trim();
+function envValue(key: string): string {
+  const val = (process.env[key] ?? '').trim();
   return val || 'Not set';
 }
 
-// GET / — HTML landing page with Server Compass dark theme
-app.get('/', (_req, res) => {
+// ---------------------------------------------------------------------------
+// GET /health — health check for container orchestration
+// ---------------------------------------------------------------------------
+WebApp.connectHandlers.use('/health', (_req: IncomingMessage, res: ServerResponse, _next: Function) => {
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ status: 'ok', service: 'servercompass-meteor-demo' }));
+});
+
+// ---------------------------------------------------------------------------
+// GET /api/env — JSON list of public environment variables
+// ---------------------------------------------------------------------------
+WebApp.connectHandlers.use('/api/env', (_req: IncomingMessage, res: ServerResponse, _next: Function) => {
+  const envs = PUBLIC_KEYS.map((key) => ({ key, value: envValue(key) }));
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ envs }));
+});
+
+// ---------------------------------------------------------------------------
+// GET / — HTML dashboard with Server Compass dark theme
+// ---------------------------------------------------------------------------
+WebApp.connectHandlers.use('/', (req: IncomingMessage, res: ServerResponse, next: Function) => {
+  // Only intercept the exact root path; pass everything else down the chain
+  if (req.url !== '/') return next();
+
   const envRows = PUBLIC_KEYS.map((key) => {
     const value = envValue(key);
     const valueClass = value === 'Not set' ? 'value not-set' : 'value';
@@ -212,7 +230,7 @@ app.get('/', (_req, res) => {
   <header>
     <div class="eyebrow">Meteor demo</div>
     <h1>Server Compass — Environment Variables</h1>
-    <div class="meta">Served by Meteor + Node.js</div>
+    <div class="meta">Served by Meteor ${Meteor.release} + Node.js ${process.version}</div>
   </header>
 
   <main>
@@ -245,22 +263,6 @@ app.get('/', (_req, res) => {
 </body>
 </html>`;
 
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.send(html);
-});
-
-// GET /api/env — JSON list of public env vars
-app.get('/api/env', (_req, res) => {
-  const envs = PUBLIC_KEYS.map((key) => ({ key, value: envValue(key) }));
-  res.json({ envs });
-});
-
-// GET /health — health check for container orchestration
-app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', service: 'servercompass-meteor-demo' });
-});
-
-const PORT = parseInt(process.env.PORT || '3000', 10);
-app.listen(PORT, () => {
-  console.log(`Server Compass Meteor demo listening on http://localhost:${PORT}`);
+  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+  res.end(html);
 });

@@ -1,0 +1,4 @@
+/* Client-side styles are minimal — the dashboard is server-rendered at / via WebApp.connectHandlers */
+body {
+  margin: 0;
+}
