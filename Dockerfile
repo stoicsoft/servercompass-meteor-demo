@@ -8,6 +8,7 @@ FROM node:22-bookworm AS builder
 # Install Meteor via the official installer
 RUN curl -fsSL https://install.meteor.com/ | sh
 ENV PATH="/root/.meteor:$PATH"
+ENV METEOR_ALLOW_SUPERUSER=1
 
 WORKDIR /app
 
