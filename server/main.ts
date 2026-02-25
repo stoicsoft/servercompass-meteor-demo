@@ -230,7 +230,7 @@ WebApp.connectHandlers.use('/', (req: IncomingMessage, res: ServerResponse, next
   <header>
     <div class="eyebrow">Meteor demo</div>
     <h1>Server Compass — Environment Variables</h1>
-    <div class="meta">Served by Meteor ${Meteor.release} + Node.js + New commit + test deployment history 2nd time! ${process.version}</div>
+    <div class="meta">Served by Meteor ${Meteor.release} + Node.js + New commit + test deployment history 3rd time! ${process.version}</div>
   </header>
 
   <main>
