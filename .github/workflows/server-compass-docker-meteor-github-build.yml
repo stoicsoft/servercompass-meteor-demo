@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       deploy_only:
-        description: 'Skip build job and run deploy only (use latest GHCR image)'
+        description: 'Skip build job and run deploy only (use existing GHCR image tag)'
         required: false
         default: 'false'
 
